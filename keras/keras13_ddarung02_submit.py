@@ -9,7 +9,11 @@ from sklearn.metrics import r2_score, mean_squared_error, root_mean_squared_erro
 import pandas as pd
 
 # 1. 데이터
-path = "./_data/ddarung/"
+# path = "./_data/ddarung/"   # 상대경로 # 현재위치는 study 디렉토리임
+path = "c:/study/_data/ddarung/"    # 절대경로
+# path = "c:\study\_data\ddarung/"    # 슬래시, 역슬래시 상관없음
+# path = "c://study//_data//ddarung/"
+# path = "c:\\study\\_data\\ddarung\\"
 
 train_csv = pd.read_csv(path + "train.csv", index_col=0)
 print(train_csv)
@@ -46,6 +50,18 @@ print(train_csv.info())
 #  8   hour_bef_pm2.5          1342 non-null   float64
 #  9   count                   1459 non-null   float64
 
+# exit()
+############################# 결측치 처리 1. 삭제 #############################
+train_csv = train_csv.dropna()
+
+# train_csv를 x와 y로 분리
+x = train_csv.drop(['count'], axis=1)   # 열(컬럼) 삭제
+y = train_csv['count']
+
+x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=0.2, random_state=42)
+print(x_train.shape, x_valid.shape, y_train.shape, y_valid.shape)   # (1062, 9) (266, 9) (1062,) (266,)
+
+################## submit 물밑작업 ##################
 print(test_csv.info())
 # Index: 715 entries, 0 to 2177
 # Data columns (total 9 columns):
@@ -61,23 +77,13 @@ print(test_csv.info())
 #  7   hour_bef_pm10           678 non-null    float64
 #  8   hour_bef_pm2.5          679 non-null    float64
 
-# exit()
-############################# 결측치 처리 1. 삭제 #############################
-train_csv = train_csv.dropna()
-
-# train_csv를 x와 y로 분리
-x = train_csv.drop(['count'], axis=1)   # 열(컬럼) 삭제
-y = train_csv['count']
-
-x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=0.2, random_state=42)
-print(x_train.shape, x_valid.shape, y_train.shape, y_valid.shape)   # (1062, 9) (266, 9) (1062,) (266,)
+################## 결측치 처리 2. 평균값 넣기 ##################
+test_csv = test_csv.fillna(test_csv.mean())
+print(test_csv.info())
 
 # 2. 모델 구성
 model = Sequential()
 model.add(Dense(16, input_dim=9))
-model.add(Dense(16))
-model.add(Dense(10))
-model.add(Dense(8))
 model.add(Dense(5))
 model.add(Dense(1))
 
@@ -98,3 +104,27 @@ print("RMSE :", rmse)
 # R2 : 0.6018080522565566
 # MSE : 2903.0019959713977
 # RMSE : 53.87951369464462
+
+##################### submission.csv 만들기 // count 컬럼에 값 넣어준다 #########################
+y_submit = model.predict(test_csv)
+
+submission['count'] = y_submit
+# print(submission)
+# print(submission.shape)
+
+submission.to_csv(path + "submit/" + "submit_0904_1149.csv")
+
+
+'''
+# 1차 시도 submit_0904_1149
+random_stat = 42
+test_size=0.2
+epochs = 1000
+batch_size = 32
+# 결과
+R2 : 0.578619459048384
+MSE : 3072.0574797615077
+RMSE : 55.42614437033761
+# 데이콘 점수
+RMSE : 69.4223819395
+'''
