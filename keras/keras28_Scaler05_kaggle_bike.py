@@ -8,9 +8,10 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from sklearn.metrics import r2_score, mean_squared_error, root_mean_squared_error
 import time
+from datetime import datetime
 
 # 1. 데이터
 path = "c:/study/_data/kaggle_bike/"
@@ -42,9 +43,11 @@ print(y) # (10886,)
 
 x_train, x_valid, y_train, y_valid = train_test_split(x, y, test_size=0.2, random_state=42)
 
-scaler = MinMaxScaler()
-scaler.fit(x_train)
-x_train = scaler.transform(x_train)
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+x_train = scaler.fit_transform(x_train)
 x_valid = scaler.transform(x_valid)
 test_csv = scaler.transform(test_csv)
 
@@ -89,7 +92,8 @@ submission['count'] = y_submit
 
 # submission.loc[submission['count'] < 0, 'count'] = 0
 
-submission.to_csv(path + "submit/" + "submit_0910_1723.csv")
+filename = datetime.now().strftime("submit_%m%d_%H%M.csv")
+submission.to_csv(path + "submit/" + filename)
 
 
 import matplotlib.pyplot as plt
@@ -159,4 +163,84 @@ rmse : 150.99250421171575
 걸린시간 :  125.07 초
 # 캐글 점수
 RMSLE : 1.34263
+'''
+
+'''
+# 5차 시도 submit_0911_1331
+
+StandardScaler 적용
+
+random_stat = 42
+test_size=0.2
+epochs = 500
+batch_size = 24
+모든 activation='relu'
+
+EarlyStopping
+monitor='val_loss',
+mode='min',
+patience=50,
+restore_best_weights=True,
+
+# 결과
+r2 : 0.3498837351799011
+mse : 21458.345703125
+rmse : 146.4866741486235
+걸린시간 :  170.89 초
+# 캐글 점수
+RMSLE : 1.33843
+'''
+
+'''
+# 6차 시도 submit_0911_1533
+
+MaxAbsScaler 적용
+
+random_stat = 42
+test_size=0.2
+epochs = 500
+batch_size = 24
+모든 activation='relu'
+
+EarlyStopping
+monitor='val_loss',
+mode='min',
+patience=50,
+restore_best_weights=True,
+
+# 결과
+r2 : 0.2973331809043884
+mse : 23192.876953125
+rmse : 152.2920777753229
+걸린시간 :  139.84 초
+# 캐글 점수
+RMSLE : 1.35244
+'''
+
+'''
+#####################################
+# 6차 시도 submit_0911_1649
+
+RobustScaler 적용
+
+random_stat = 42
+test_size=0.2
+epochs = 500
+batch_size = 24
+모든 activation='relu'
+
+EarlyStopping
+monitor='val_loss',
+mode='min',
+patience=50,
+restore_best_weights=True,
+
+# 결과
+r2 : 0.3461220860481262
+mse : 21582.505859375
+rmse : 146.90985623631587
+걸린시간 :  304.19 초
+# 캐글 점수
+RMSLE : 
+####################################
 '''

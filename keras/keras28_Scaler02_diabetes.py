@@ -1,6 +1,6 @@
 # 20-2 복사
 from sklearn.datasets import load_diabetes
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.callbacks import EarlyStopping
@@ -20,9 +20,11 @@ x_val, x_test, y_val, y_test = train_test_split(x_test, y_test, test_size=0.5, r
 print(x_train.shape, x_val.shape, x_test.shape, y_train.shape, y_val.shape, y_test.shape) # (309, 10) (66, 10) (67, 10) (309,) (66,) (67,)
 
 # 스케일링
-scaler = MinMaxScaler()
-scaler.fit(x_train)
-x_train = scaler.transform(x_train)
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
 
 # 2. 모델 구성
@@ -36,7 +38,7 @@ model.add(Dense(1))
 es = EarlyStopping(
     monitor='val_loss',
     mode='min',
-    patience=30,
+    patience=50,
     restore_best_weights=True, # 성능이 가장 좋았던 Epoch의 가중치를 모델에 다시 적용 # default는 False
 )
 
@@ -62,10 +64,10 @@ print("MSE :", mse)
 print("RMSE :", rmse)
 print("걸린시간 : ", round(end_time - start_time, 2), "초") # 2번째 자리에서 반올림
 
-# R2 : 0.44158839147355333
-# MSE : 3170.6491712406937
-# RMSE : 56.30851775034301
-# 걸린시간 :  29.25 초
+# R2 : 0.39488932703234814
+# MSE : 3435.805460449911
+# RMSE : 58.615744134574555
+# 걸린시간 :  5.49 초
 
 import matplotlib.pyplot as plt
 plt.rcParams['font.family'] ='Malgun Gothic'
@@ -80,3 +82,25 @@ plt.xlabel('epochs')
 plt.ylabel('loss')
 plt.grid() # 격자표시 추가
 plt.show()
+
+"""
+##########################################
+MaxAbsScaler 적용
+
+R2 : 0.37587622615402116
+MSE : 3543.7614406303055
+RMSE : 59.52950059113805
+걸린시간 :  5.46 초
+###########################################
+"""
+
+"""
+##########################################
+RobustScaler 적용
+
+R2 : 0.42711149528445147
+MSE : 3252.848678205168
+RMSE : 57.03375034315356
+걸린시간 :  7.38 초
+###########################################
+"""

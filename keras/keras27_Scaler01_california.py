@@ -20,6 +20,10 @@ MinMaxScaler
 (원값 - Min) / (Max - Min)
 
 [0, 1] 사이의 값으로 변환됨
+
+아래는 잘못된 예시임
+- train 데이터를 기준으로만 min, max 계산해야함
+- val, test 데이터가 min, max를 구하는 기준에 포함되지 않도록 주의!!
 """
 
 from sklearn.preprocessing import MinMaxScaler

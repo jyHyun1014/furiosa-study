@@ -3,7 +3,7 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.datasets import boston_housing
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from sklearn.metrics import r2_score, mean_squared_error, root_mean_squared_error
 import time
 
@@ -15,9 +15,11 @@ x_val, x_test, y_val, y_test = train_test_split(x_test, y_test, test_size=0.5, r
 print(x_train.shape, x_val.shape, x_test.shape, y_train.shape, y_val.shape, y_test.shape) # (404, 13) (51, 13) (51, 13) (404,) (51,) (51,)
 
 # 스케일링
-scaler = MinMaxScaler()
-scaler.fit(x_train)
-x_train = scaler.transform(x_train)
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+x_train = scaler.fit_transform(x_train)
 x_val = scaler.transform(x_val)
 x_test = scaler.transform(x_test)
 
@@ -57,10 +59,10 @@ print("MSE :", mse)
 print("RMSE :", rmse)
 print("걸린시간 : ", round(end_time - start_time, 2), "초") # 2번째 자리에서 반올림
 
-# R2 : 0.5982958329119406
-# MSE : 22.846934541876507
-# RMSE : 4.779846706943279
-# 걸린시간 :  12.7 초
+# R2 : 0.6501915605442139
+# MSE : 19.89536373589657
+# RMSE : 4.460421923528823
+# 걸린시간 :  4.97 초
 
 import matplotlib.pyplot as plt
 plt.rcParams['font.family'] ='Malgun Gothic'
@@ -75,3 +77,25 @@ plt.xlabel('epochs')
 plt.ylabel('loss')
 plt.grid() # 격자표시 추가
 plt.show()
+
+"""
+##########################################
+MaxAbsScaler 적용
+
+R2 : 0.57785638603037
+MSE : 24.009428594055542
+RMSE : 4.899941692924064
+걸린시간 :  14.5 초
+###########################################
+"""
+
+"""
+##########################################
+RobustScaler 적용
+
+R2 : 0.5825583213124677
+MSE : 23.742005907383056
+RMSE : 4.8725769267794075
+걸린시간 :  4.78 초
+###########################################
+"""

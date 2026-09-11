@@ -1,9 +1,10 @@
-# 19-1 카피
+# 29-1 카피
 
 from sklearn.datasets import fetch_california_housing
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.callbacks import EarlyStopping
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error, root_mean_squared_error
 import numpy as np
@@ -19,19 +20,6 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_
 x_val, x_test, y_val, y_test = train_test_split(x_test, y_test, test_size=0.5, random_state=42)
 print(x_train.shape, x_val.shape, x_test.shape, y_train.shape, y_val.shape, y_test.shape) # (14448, 8) (3096, 8) (3096, 8) (14448,) (3096,) (3096,)
 
-"""
-MinMaxScaler
-
-(원값 - Min) / (Max - Min)
-
-[0, 1] 사이의 값으로 변환됨
-
-- train 데이터를 기준으로만 min, max 계산해야함
-- val, test 데이터가 min, max를 구하는 기준에 포함되지 않도록 주의!!
-"""
-
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
-
 # scaler = MinMaxScaler()
 # scaler = StandardScaler()
 # scaler = MaxAbsScaler()
@@ -43,11 +31,21 @@ print(np.min(x_train), np.max(x_train)) # 0.0 1.0000000000000004
 print(np.min(x_test), np.max(x_test)) # -0.0010638297872338498 1.333173652694611
 
 # 2. 모델구성
-model = Sequential()
-model.add(Dense(16, input_dim=8))
-model.add(Dense(10))
-model.add(Dense(6))
-model.add(Dense(1))
+# model = Sequential()
+# model.add(Dense(16, input_dim=8))
+# model.add(Dense(10))
+# model.add(Dense(6))
+# model.add(Dense(1))
+
+# model.summary()
+
+path = "./_save/keras29/"
+# model.save(path + "keras29_1_save_model.keras") # 모델 구조 + 초기 가중치 저장
+model = load_model(path + "keras29_1_save_model.keras")
+
+model.summary()
+
+# exit()
 
 # 3. 컴파일, 훈련
 es = EarlyStopping(
@@ -79,19 +77,6 @@ print("걸린시간 : ", round(end_time - start_time, 2), "초") # 2번째 자�
 # MSE : 0.509197113294381
 # RMSE : 0.7135804883083484
 # 걸린시간 :  53.87 초
-
-print("===================== history ===========================")
-print(hist)
-# <keras.src.callbacks.history.History object at 0x0000017DFECE9150>
-print("===================== history ===========================")
-print(hist.history)
-# {'loss': [1.133229374885559, 0.6131129860877991, 0.5851379036903381, 0.5658202767372131, 0.5541895031929016, 0.5461809635162354, 0.541628360748291, 0.5389191508293152, 0.5392152070999146, 0.5385891199111938], 
-#  'val_loss': [0.6490893959999084, 0.6218149065971375, 0.5931639075279236, 0.5749639272689819, 0.5657128095626831, 0.5569615960121155, 0.56340092420578, 0.561238706111908, 0.5499110817909241, 0.5561733245849609]}
-print("===================== loss ===========================")
-print(hist.history['loss'])
-print("===================== val_loss ===========================")
-print(hist.history['val_loss'])
-print("================================================")
 
 
 import matplotlib.pyplot as plt

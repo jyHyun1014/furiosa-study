@@ -6,10 +6,11 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from sklearn.metrics import r2_score, mean_squared_error, root_mean_squared_error
 import pandas as pd
 import time
+from datetime import datetime
 
 # 1. 데이터
 path = "c:/study/_data/ddarung/"
@@ -82,9 +83,11 @@ print(test_csv.info())
 
 
 # 스케일링
-scaler = MinMaxScaler()
-scaler.fit(x_train)
-x_train = scaler.transform(x_train)
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = MaxAbsScaler()
+scaler = RobustScaler()
+x_train = scaler.fit_transform(x_train)
 x_valid = scaler.transform(x_valid)
 test_csv = scaler.transform(test_csv)
 
@@ -132,7 +135,8 @@ submission['count'] = y_submit
 # print(submission)
 # print(submission.shape)
 
-submission.to_csv(path + "submit/" + "submit_0910_1649.csv")
+filename = datetime.now().strftime("submit_%m%d_%H%M.csv")
+submission.to_csv(path + "submit/" + filename)
 
 import matplotlib.pyplot as plt
 plt.rcParams['font.family'] ='Malgun Gothic'
@@ -185,4 +189,85 @@ RMSE : 53.69173244095233
 걸린시간 :  13.59 초
 # 데이콘 점수
 RMSE : 69.1656847734
+'''
+
+'''
+# 3차 시도 submit_0911_1330
+
+StandardScaler 적용
+
+random_stat = 42
+test_size=0.2
+epochs = 500000
+batch_size = 32
+
+Early Stopping
+monitor='val_loss',
+mode='min',
+patience=20,
+restore_best_weights=True,
+
+# 결과
+R2 : 0.6059294546352809
+MSE : 2872.9550816642645
+RMSE : 53.59995411998283
+걸린시간 :  5.83 초
+# 데이콘 점수
+RMSE : 69.6505069905
+'''
+
+
+'''
+#######################################
+# 4차 시도 submit_0911_1529
+
+MaxAbsScaler 적용
+
+random_stat = 42
+test_size=0.2
+epochs = 500000
+batch_size = 32
+
+Early Stopping
+monitor='val_loss',
+mode='min',
+patience=20,
+restore_best_weights=True,
+
+# 결과
+R2 : 0.6039252799013126
+MSE : 2887.5664350227557
+RMSE : 53.73608131435298
+걸린시간 :  21.26 초
+# 데이콘 점수
+RMSE : 69.6190073622
+#######################################
+'''
+
+
+'''
+#######################################
+# 5차 시도 submit_0911_1626
+
+RobustScaler 적용
+
+random_stat = 42
+test_size=0.2
+epochs = 500000
+batch_size = 32
+
+Early Stopping
+monitor='val_loss',
+mode='min',
+patience=20,
+restore_best_weights=True,
+
+# 결과
+R2 : 0.6053325020078316
+MSE : 2877.307140209914
+RMSE : 53.64053635274273
+걸린시간 :  8.85 초
+# 데이콘 점수
+RMSE : 
+#######################################
 '''
