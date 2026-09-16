@@ -1,10 +1,10 @@
 path = "./keras/"
 
-keras_num = "34"
-keyword = "hamsu"
+keras_num = "35"
+keyword = "gpu_test"
 
 names = [
-    "01_california",
+    # "01_california",
     "02_diabetes",
     "03_boston",
     "04_dacon_ddarung",
