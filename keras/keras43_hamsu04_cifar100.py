@@ -1,0 +1,177 @@
+# 40-4 카피
+
+import numpy as np
+import pandas as pd
+from sklearn.metrics import accuracy_score
+from keras.datasets import cifar100
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.layers import Dense, Dropout, Conv2D, Flatten, MaxPooling2D, BatchNormalization, GlobalAveragePooling2D, Input
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+import time
+
+# 1. 데이터
+(x_train, y_train), (x_test, y_test) = cifar100.load_data()
+print(x_train.shape, y_train.shape) # (50000, 32, 32, 3) (50000, 1)
+print(x_test.shape, y_test.shape) # (10000, 32, 32, 3) (10000, 1)
+
+print(np.unique(y_train, return_counts=True)) # (array([0, 1 , ..., 99], dtype=uint8), array([500, 500, ... , 500],
+
+# # 사진 확인
+# import matplotlib.pyplot as plt
+# plt.imshow(x_train[0])
+# plt.show()
+# print(y_train[0])
+
+# 스케일링 1
+print(np.min(x_train), np.max(x_train)) # 0 255
+print(np.min(x_test), np.max(x_test)) # 0 225
+x_train = x_train/255.
+x_test = x_test/255.
+print(np.min(x_train), np.max(x_train)) # 0.0 1.0
+print(np.min(x_test), np.max(x_test)) # 0.0 1.0
+
+# 원핫인코딩
+from sklearn.preprocessing import OneHotEncoder
+ohe = OneHotEncoder(sparse_output=False)
+y_train = ohe.fit_transform(y_train)
+y_test = ohe.transform(y_test)
+
+print(x_train.shape, y_train.shape) # (50000, 32, 32, 3) (50000, 100)
+print(x_test.shape, y_test.shape) # (10000, 32, 32, 3) (10000, 100)
+
+# 2. 모델 구성
+
+
+input = Input(shape=(32,32,3))
+
+conv1 = Conv2D(32, (3,3), padding='same', activation='relu')(input)
+batch1 = BatchNormalization()(conv1)
+conv2 = Conv2D(32, (3,3), padding='same', activation='relu')(batch1)
+batch2 = BatchNormalization()(conv2)
+pooling1 = MaxPooling2D(pool_size=(2,2))(batch2)
+drop1 = Dropout(0.2)(pooling1)
+
+conv3 = Conv2D(64, (3,3), padding='same', activation='relu')(drop1)
+batch3 = BatchNormalization()(conv3)
+conv4 = Conv2D(64, (3,3), padding='same', activation='relu')(batch3)
+batch4 = BatchNormalization()(conv4)
+pooling2 = MaxPooling2D(pool_size=(2,2))(batch4)
+drop2 = Dropout(0.3)(pooling2)
+
+conv5 = Conv2D(128, (3,3), padding='same', activation='relu')(drop2)
+batch5 = BatchNormalization()(conv5)
+conv6 = Conv2D(128, (3,3), padding='same', activation='relu')(batch5)
+batch6 = BatchNormalization()(conv6)
+pooling3 = MaxPooling2D(pool_size=(2,2))(batch6)
+drop3 = Dropout(0.4)(pooling3)
+
+gap = GlobalAveragePooling2D()(drop3)
+dense = Dense(128, activation='relu')(gap)
+batch7 = BatchNormalization()(dense)
+drop4 = Dropout(0.5)(batch7)
+output = Dense(100, activation='softmax')(drop4)
+
+model = Model(inputs=input, outputs=output)
+
+
+# model = Sequential()
+# model.add(Conv2D( # (32,32,32)
+#     filters=32,
+#     kernel_size=(3,3),
+#     padding='same',
+#     activation='relu',
+#     input_shape=(32,32,3)
+# ))
+# model.add(BatchNormalization())
+# model.add(Conv2D( # (32,32,32)
+#     filters=32,
+#     kernel_size=(3,3),
+#     padding='same',
+#     activation='relu'
+# ))
+# model.add(BatchNormalization())
+# model.add(MaxPooling2D(pool_size=(2,2))) # (16,16,32)
+# model.add(Dropout(0.2))
+
+# model.add(Conv2D( # (16,16,64)
+#     filters=64,
+#     kernel_size=(3,3),
+#     padding='same',
+#     activation='relu'
+# ))
+# model.add(BatchNormalization())
+# model.add(Conv2D( # (16,16,64)
+#     filters=64,
+#     kernel_size=(3,3),
+#     padding='same',
+#     activation='relu'
+# ))
+# model.add(BatchNormalization())
+# model.add(MaxPooling2D(pool_size=(2,2))) # (8,8,64)
+# model.add(Dropout(0.3))
+
+# model.add(Conv2D( # (8,8,128)
+#     filters=128,
+#     kernel_size=(3,3),
+#     padding='same',
+#     activation='relu'
+# ))
+# model.add(BatchNormalization())
+# model.add(Conv2D( # (8,8,128)
+#     filters=128,
+#     kernel_size=(3,3),
+#     padding='same',
+#     activation='relu'
+# ))
+# model.add(BatchNormalization())
+# model.add(MaxPooling2D(pool_size=(2,2))) # (4,4,128)
+# model.add(Dropout(0.4))
+
+# # model.add(Flatten()) # (2048,)
+# model.add(GlobalAveragePooling2D()) # (128,)
+# model.add(Dense(128, activation='relu'))
+# model.add(BatchNormalization())
+# model.add(Dropout(0.5))
+# model.add(Dense(100, activation='softmax')) # (100,)
+
+model.summary()
+
+# 3. 컴파일, 훈련
+es = EarlyStopping(
+    monitor='val_loss',
+    mode='min',
+    patience=50,
+    restore_best_weights=True, # 성능이 가장 좋았던 Epoch의 가중치를 모델에 다시 적용 # default는 False
+    verbose=1,
+)
+
+model.compile(loss='categorical_crossentropy', optimizer='adam',
+              metrics=['acc'])
+start_time = time.time()
+model.fit(x_train, y_train, epochs=200, batch_size=128,
+          verbose=1,
+          validation_split=0.2,
+          callbacks=[es],
+          )
+end_time = time.time()
+
+# 4. 평가, 예측
+print("================ model. evaluate ====================")
+loss = model.evaluate(x_test, y_test, verbose=1)
+print("loss :", loss[0])
+print("acc :", loss[1])
+
+y_pred = model.predict(x_test)
+print(y_pred)
+print(y_pred.shape) # (10000, 100)
+y_pred = np.argmax(y_pred, axis=1)
+y_test = np.argmax(y_test, axis=1)
+print(y_pred) # [3 8 8 ... 5 0 7]
+print(y_pred.shape) # (10000,)
+
+acc_score = accuracy_score(y_test, y_pred)
+print("accuracy_score :", acc_score)
+print("걸린시간 :", round(end_time - start_time), "초")
+
+# accuracy_score : 0.5847
+# 걸린시간 : 1024 초
