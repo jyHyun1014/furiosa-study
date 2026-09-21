@@ -66,6 +66,8 @@ print('train:', xy_train.samples) # 6404
 print('validation:', xy_val.samples) # 1601
 print('test:', xy_test.samples) # 2023
 
+print('class_indices :', xy_train.class_indices) # class_indices : {'cats': 0, 'dogs': 1}
+
 # 2. 모델구성
 model = Sequential()
 model.add(Conv2D(
