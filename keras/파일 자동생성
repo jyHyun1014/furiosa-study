@@ -1,7 +1,7 @@
 path = "./keras/"
 
-keras_num = "35"
-keyword = "gpu_test"
+keras_num = "53"
+keyword = "Reduce"
 
 names = [
     # "01_california",
@@ -13,7 +13,12 @@ names = [
     "07_santander",
     "08_wine",
     "09_fetch_covtype",
-    "10_digits"
+    "10_digits",
+    "11_mnist",
+    "12_fashion",
+    "13_cifar10",
+    "14_cifar100",
+    "15_man_woman",
 ]
 
 for name in names:
