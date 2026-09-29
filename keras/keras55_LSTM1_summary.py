@@ -2,7 +2,7 @@
 
 import numpy as np
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, SimpleRNN, Dropout, LSTM
+from tensorflow.keras.layers import Dense, SimpleRNN, Dropout, LSTM, GRU
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from tensorflow.keras.optimizers import Adam
 
@@ -28,6 +28,8 @@ model = Sequential()
 # model.add(SimpleRNN(10, input_shape=(3, 1))) # (None, 10) # 3차원으로 들어가서 2(또는 1)차원으로 나옴 -> 바로 Dense와 연결 가능 
 
 model.add(LSTM(10, input_shape=(3, 1))) # RNN 계열의 끝판왕
+# model.add(GRU(10, input_shape=(3, 1)))
+
 model.add(Dense(7, activation='relu'))
 model.add(Dense(1))
 
