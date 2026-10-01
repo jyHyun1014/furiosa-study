@@ -1,3 +1,4 @@
 .vscode
 _data/
 _save/
+.env
