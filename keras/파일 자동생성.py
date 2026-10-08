@@ -1,10 +1,10 @@
-path = "./keras/"
+path = "./keras2/"
 
-keras_num = "53"
-keyword = "Reduce"
+keras_num = "68"
+keyword = "Conv1D_"
 
 names = [
-    # "01_california",
+    "01_california",
     "02_diabetes",
     "03_boston",
     "04_dacon_ddarung",
@@ -19,6 +19,7 @@ names = [
     "13_cifar10",
     "14_cifar100",
     "15_man_woman",
+    "16_jena",
 ]
 
 for name in names:
