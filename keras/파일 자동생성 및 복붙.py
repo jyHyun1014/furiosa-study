@@ -2,32 +2,35 @@ import os
 import shutil
 
 # 복사할 기존 파일
-o_path = "./keras/"
-o_keras_num = "53"
-o_keyword = "Reduce"
+o_path = "./keras2/"
+o_keras_num = "73"
+o_keyword = "vgg16_"
 
 # 새로 생성할 파일
 path = "./keras2/"
-keras_num = "70"
-keyword = "Conv1D_"
+keras_num = "76"
+keyword = "All_TransferLearning_"
 
 names = [
-    "01_california",
-    "02_diabetes",
-    "03_boston",
-    "04_dacon_ddarung",
-    "05_kaggle_bike",
-    "06_cancer",
-    "07_santander",
-    "08_wine",
-    "09_fetch_covtype",
-    "10_digits",
-    "11_mnist",
-    "12_fashion",
-    "13_cifar10",
+    # "01_california",
+    # "02_diabetes",
+    # "03_boston",
+    # "04_dacon_ddarung",
+    # "05_kaggle_bike",
+    # "06_cancer",
+    # "07_santander",
+    # "08_wine",
+    # "09_fetch_covtype",
+    # "10_digits",
+    # "11_mnist",
+    # "12_fashion",
+    # "13_cifar10",
     "14_cifar100",
-    "15_man_woman",
-    "16_jena",
+    "15_man_horse",
+    "16_rps",
+    "17_man_woman",
+    "18_cat_dog",
+    # "19_jena",
 ]
 
 for name in names:

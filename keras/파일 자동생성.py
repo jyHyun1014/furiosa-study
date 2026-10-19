@@ -18,8 +18,11 @@ names = [
     "12_fashion",
     "13_cifar10",
     "14_cifar100",
-    "15_man_woman",
-    "16_jena",
+    "15_man_horse",
+    "16_rps",
+    "17_man_woman",
+    "18_cat_dog",
+    "19_jena",
 ]
 
 for name in names:
